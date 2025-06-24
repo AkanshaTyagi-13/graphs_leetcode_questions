@@ -1,0 +1,45 @@
+class Solution {
+    public class Pair{
+        int i;
+        int j;
+        int lvl;
+        Pair(int i, int j, int lvl){
+            this.i=i;
+            this.j=j;
+            this.lvl=lvl;
+        }
+    }
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        if(grid==null||grid.length==0){
+            return 0;
+        }
+        if(grid[0][0]!=0){
+            return -1;
+        }
+        if(grid.length==1&&grid[0][0]==0){
+            return 1;
+        }
+        Queue<Pair> q=new LinkedList<>();
+        int[][] dir={{1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,-1},{-1,1},{1,-1}};
+        int ans=1;
+        q.offer(new Pair(0,0,1));
+        while(!q.isEmpty()){
+            Pair p=q.poll();
+            int i=p.i,j=p.j,lvl=p.lvl;
+            ans=lvl;
+            
+            for(int[] d:dir){
+                int newi=i+d[0];
+                int newj=j+d[1];
+                if(newi==grid.length-1&&newj==grid.length-1&&grid[newi][newj]==0){
+                return lvl+1;
+            }
+                if(newi>=0&&newi<grid.length&&newj>=0&&newj<grid[0].length&&grid[newi][newj]==0){
+                    grid[newi][newj]=1;
+                    q.offer(new Pair(newi,newj,lvl+1));
+                }
+            }
+        }
+        return -1;
+    }
+}
