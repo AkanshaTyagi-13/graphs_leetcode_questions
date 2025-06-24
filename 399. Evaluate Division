@@ -1,0 +1,49 @@
+class Solution {
+    class Pair{
+        String v;
+        double wt;
+        Pair(String v, double wt){
+            this.v=v;
+            this.wt=wt;
+        }
+    }
+    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+        Map<String,List<Pair>> graph=new HashMap<>();
+        
+        for(int i=0;i<equations.size();i++){
+            String u=equations.get(i).get(0);
+            String v=equations.get(i).get(1);
+            double wt=values[i];
+            
+            graph.putIfAbsent(u,new ArrayList<>());
+            graph.putIfAbsent(v,new ArrayList<>());
+            graph.get(u).add(new Pair(v,wt));
+            graph.get(v).add(new Pair(u,1.0/wt));
+        }
+
+        double[] res=new double[queries.size()];
+        
+        for(int i=0;i<queries.size();i++){
+            String s=queries.get(i).get(0);
+            String e=queries.get(i).get(1);
+            Set<String> visited=new HashSet<>();
+            double result=dfs(s,e,1.0,graph,visited);
+            res[i]=result;
+        }
+        return res;
+    }
+
+    public double dfs(String s, String e, double value ,
+    Map<String,List<Pair>> graph,Set<String> visited){
+        if(!graph.containsKey(s)||!graph.containsKey(e)) return -1.0;
+        if(s.equals(e)) return value;
+        visited.add(s);
+        for(Pair p:graph.get(s)){
+            if(!visited.contains(p.v)){
+                double ans=dfs(p.v,e,value*p.wt,graph,visited);
+                if(ans!=-1.0) return ans;
+            }
+        }
+        return -1.0;
+    }
+}
