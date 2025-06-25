@@ -1,0 +1,44 @@
+class Solution {
+    public int openLock(String[] deadends, String target) {
+        Queue<String> q=new LinkedList<>();
+        Set<String> visited=new HashSet<>();
+        Set<String> dead=new HashSet<>(Arrays.asList(deadends));
+        
+        q.offer("0000");
+        visited.add("0000");
+        if(dead.contains("0000")||dead.contains(target)) return -1;
+        int level=0;
+        while(!q.isEmpty()){
+            int size=q.size();
+            for(int i=0;i<size;i++){
+                String curr=q.poll();
+                if(dead.contains(curr)){
+                    continue;
+                }
+                if(curr.equals(target)) return level;
+                
+            
+            for(String ne:getNeighbors(curr)){
+                if(!dead.contains(ne)&&!visited.contains(ne)){
+                    q.offer(ne);
+                    visited.add(ne);
+                }
+                }
+            }
+            level++;
+        }
+        return -1;
+    }
+    public List<String> getNeighbors(String s){
+        List<String> neighbors=new ArrayList<>();
+        for(int i=0;i<4;i++){
+                char[] c=s.toCharArray();
+                c[i]=c[i]=='0'?'9':(char)(c[i]-1);
+                neighbors.add(new String(c));
+                c=s.toCharArray();
+                c[i]=c[i]=='9'?'0':(char)(c[i]+1);
+                neighbors.add(new String(c));
+            }
+        return neighbors; 
+    }
+}
