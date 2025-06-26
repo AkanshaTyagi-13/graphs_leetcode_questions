@@ -1,0 +1,66 @@
+class Solution {
+    public List<List<String>> accountsMerge(List<List<String>> accounts) {
+        class DSU{
+            
+            int[] parent;
+            DSU(int size){
+                parent=new int[size];
+                for(int i=0;i<size;i++){
+                    parent[i]=i;
+                }
+            }
+
+            public int find(int s){
+                if(parent[s]!=s){
+                    parent[s]=find(parent[s]);
+                }
+                return parent[s];
+            }
+            public void union(int x,int y){
+                int rootX=find(x);
+                int rootY=find(y);
+                if(rootX!=rootY){
+                    parent[rootX]=rootY;
+                }
+            }
+        }
+
+        Map<String,String> emailToName=new HashMap<>();
+        Map<String, Integer> emailToId=new HashMap<>();
+        int id=0;
+        for(List<String> account:accounts){
+            for(int i=1;i<account.size();i++){
+                String email=account.get(i);
+                if(!emailToId.containsKey(email)){
+                    emailToId.put(email,id++);
+                }
+                emailToName.put(email,account.get(0));
+            }
+        }
+
+        DSU dsu=new DSU(id);
+        for(List<String> account:accounts){
+            int firstEmail=emailToId.get(account.get(1));
+            for(int i=2;i<account.size();i++){
+                dsu.union(firstEmail,emailToId.get(account.get(i)));
+            }
+        }
+
+        Map<Integer,List<String>> collection=new HashMap<>();
+        for(String email:emailToId.keySet()){
+            int p=dsu.find(emailToId.get(email));
+            collection.computeIfAbsent(p,x->new ArrayList<>()).add(email);
+        }
+
+        List<List<String>> res=new ArrayList<>();
+        for(List<String> emails:collection.values()){
+            String name=emailToName.get(emails.get(0));
+            Collections.sort(emails);
+            List<String> ans=new ArrayList<>();
+            ans.add(name);
+            ans.addAll(emails);
+            res.add(ans);
+        }
+        return res;     
+    }
+}
