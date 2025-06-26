@@ -1,0 +1,60 @@
+
+class Solution {
+    public ArrayList<ArrayList<Integer>> getComponents(int V, int[][] edges) {
+        // code here
+        class DSU{
+            int[] rank;
+            int[] parent;
+            DSU(int s){
+                rank=new int[s];
+                parent=new int[s];
+                for(int i=0;i<s;i++){
+                    parent[i]=i;
+                    rank[i]=0;
+                }
+            }
+            
+            public int find(int x){
+                if(parent[x]!=x){
+                    parent[x]=find(parent[x]);
+                }
+                return parent[x];
+            }
+            
+            public void union(int x,int y){
+                int rootX=find(x);
+                int rootY=find(y);
+                if(rootX==rootY) return;
+                
+                if(rank[rootX]<rank[rootY]){
+                    parent[rootX]=rootY;
+                }
+                else if(rank[rootX]>rank[rootY]){
+                    parent[rootY]=rootX;
+                }
+                else{
+                    parent[rootY]=rootX;
+                    rank[rootX]+=1;
+                }
+            }
+        }
+        
+        DSU dsu=new DSU(V);
+        for(int[] e:edges){
+            int x=e[0],y=e[1];
+            dsu.union(x,y);
+        }
+        ArrayList<ArrayList<Integer>> res=new ArrayList<>();
+        Map<Integer,ArrayList<Integer>> ans=new HashMap<>();
+        
+        for(int i=0;i<V;i++){
+            int p=dsu.find(i);
+            ans.computeIfAbsent(p, k -> new ArrayList<>()).add(i);
+        }
+        
+        for(ArrayList<Integer> conn:ans.values()){
+            res.add(conn);
+        }
+        return res;
+    }
+}
